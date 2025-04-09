@@ -14,15 +14,23 @@ const JoystickDisplay: React.FC = () => {
       setJoystickData(data)
     })
 
+    ipcRenderer.on('hid-stopped', () => {
+      setJoystickData(null)
+    })
+
     // Clean up the event listener when the component unmounts
     return (): void => {
       ipcRenderer.removeAllListeners('hid-data')
     }
   }, [])
 
-  // Function to render the PWM table
+  // Progress calculation function
+  const calculateProgress = (pwmValue: number) => {
+    return ((pwmValue - 1000) / (2000 - 1000)) * 100;
+  };
+
   const renderPWMTable = () => {
-    if (!joystickData) return null
+    if (!joystickData) return null;
 
     return (
       <table>
@@ -30,6 +38,7 @@ const JoystickDisplay: React.FC = () => {
           <tr>
             <th>Type</th>
             <th>PWM</th>
+            <th>Progress</th>
           </tr>
         </thead>
         <tbody>
@@ -37,6 +46,17 @@ const JoystickDisplay: React.FC = () => {
             <tr key={channel}>
               <td>{channel}</td>
               <td>{pwmValue}</td>
+              <td>
+                <div style={{ width: '100%', backgroundColor: '#ddd', height: '12px' }}>
+                  <div
+                    style={{
+                      width: `${calculateProgress(pwmValue)}%`,
+                      backgroundColor: 'green',
+                      height: '100%',
+                    }}
+                  />
+                </div>
+              </td>
             </tr>
           ))}
         </tbody>

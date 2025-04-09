@@ -64,8 +64,12 @@ app.whenReady().then(() => {
     })
   })
 
-  ipcMain.on('stop-hid', () => {
-    stopHIDReading()
+  ipcMain.on('stop-hid', (event) => {
+    console.log('stop-hid reading')
+    stopHIDReading(() => {
+      console.log('HID reading stopped')
+      event.sender.send('hid-stopped')
+    })
   })
 })
 

@@ -26,11 +26,15 @@ const startHIDReading = (callback: (joystickOutput: JoystickOutput) => void): vo
   })
 }
 
-const stopHIDReading = (): void => {
+const stopHIDReading = (callback: () => void): void => {
+  console.log('stopHIDReading in hidHandler called')
+  console.log('device', device)
   if (device) {
+    console.log('Closing device...')
     device.removeAllListeners('data')
     device.close()
     device = null
+    callback()
   }
 }
 
