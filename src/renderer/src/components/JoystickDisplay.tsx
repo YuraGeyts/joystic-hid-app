@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { JoystickOutputInterface } from '../../../models/JoystickOutput'
-
+import JoystickSquare from './JoystickSquare'
 
 const JoystickDisplay: React.FC = () => {
   // State to store joystick data
@@ -65,11 +65,34 @@ const JoystickDisplay: React.FC = () => {
   }
 
   return (
-    <div>
-      <h1>Joystick PWM Output</h1>
-      {renderPWMTable()}
+    <div style={{textAlign: 'center'}}>
+      <h1>Joystick Position</h1>
+      {joystickData && (
+        <div style={styles.row}>
+          <div style={styles.squareContainer}>
+            <h2>Yaw and Throttle</h2>
+            <JoystickSquare x={joystickData.yaw} y={joystickData.throttle} />
+          </div>
+          <div style={styles.squareContainer}>
+            <h2>Roll and Pitch</h2>
+            <JoystickSquare x={joystickData.roll} y={joystickData.pitch} />
+          </div>
+        </div>
+      )}
     </div>
-  )
-}
+  );
+};
+
+const styles = {
+  row: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    width: '100%',
+  },
+  squareContainer: {
+    width: '45%',
+    textAlign: 'center' as 'center',
+  },
+};
 
 export default JoystickDisplay
