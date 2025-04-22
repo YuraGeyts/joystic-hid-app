@@ -31,10 +31,10 @@ const JoystickDisplay: React.FC = () => {
 
   const renderPWMTable = () => {
     if (!joystickData) return null;
-  
+
     const excludedChannels = ['yaw', 'throttle', 'roll', 'pitch']
     const filteredData = Object.entries(joystickData).filter(([channel]) => !excludedChannels.includes(channel))
-  
+
     return (
       <div style={styles.centerContainer}>
         <table>
@@ -70,21 +70,27 @@ const JoystickDisplay: React.FC = () => {
   }
 
   return (
-    <div style={{textAlign: 'center'}}>
-      <h1>Joystick Position</h1>
-      {joystickData && (
-        <div style={styles.row}>
-          <div style={styles.squareContainer}>
-            <h2>Yaw and Throttle</h2>
-            <JoystickSquare x={joystickData.yaw} y={joystickData.throttle} />
+    <div style={{ textAlign: 'center' }}>
+      {joystickData == null ? (
+        <div>
+          <h1>Joystick Position App</h1>
+          <p>Waiting to joystick connection</p>
+        </div>
+      ) : (
+        <div>
+          <div style={styles.row}>
+            <div style={styles.squareContainer}>
+              <h2>Yaw and Throttle</h2>
+              <JoystickSquare x={joystickData.yaw} y={joystickData.throttle} />
+            </div>
+            <div style={styles.squareContainer}>
+              <h2>Roll and Pitch</h2>
+              <JoystickSquare x={joystickData.roll} y={joystickData.pitch} />
+            </div>
           </div>
-          <div style={styles.squareContainer}>
-            <h2>Roll and Pitch</h2>
-            <JoystickSquare x={joystickData.roll} y={joystickData.pitch} />
-          </div>
+          {renderPWMTable()}
         </div>
       )}
-      {joystickData && renderPWMTable()}
     </div>
   );
 };
@@ -101,7 +107,7 @@ const styles = {
     alignItems: 'center'
   },
   centerContainer: {
-    display : 'flex',
+    display: 'flex',
     justifyContent: 'center',
     alignItems: 'center'
   }
