@@ -3,7 +3,10 @@ import JoystickOutput from '../models/JoystickOutput'
 
 let device: HID.HID | null = null
 
-const startHIDReading = (callback: (joystickOutput: JoystickOutput) => void): void => {
+// TODO: Refactor this to use a more generic way to get the vendorId and productId
+const startHIDReading = (
+  callback: (joystickOutput: JoystickOutput, error: Error | null) => void
+): void => {
   device = new HID.HID(4617, 20308) // Hardcoded vendorId and productId for the Radiomaster joysticks
 
   let latestBuffer: Buffer | null = null
@@ -12,11 +15,14 @@ const startHIDReading = (callback: (joystickOutput: JoystickOutput) => void): vo
     latestBuffer = data
 
     let joystickOutput = new JoystickOutput(data)
-    callback(joystickOutput)
+    callback(joystickOutput, null)
   })
 
   device.on('error', (error: Error) => {
     console.error('Error:', error)
+    latestBuffer = null
+    device = null
+    callback(new JoystickOutput(), error)
   })
 
   device.on('close', () => {
@@ -24,18 +30,38 @@ const startHIDReading = (callback: (joystickOutput: JoystickOutput) => void): vo
     latestBuffer = null
     device = null
   })
-}
 
-const stopHIDReading = (callback: () => void): void => {
-  console.log('stopHIDReading in hidHandler called')
-  console.log('device', device)
-  if (device) {
-    console.log('Closing device...')
-    device.removeAllListeners('data')
-    device.close()
+  device.on('disconnect', () => {
+    console.log('Device disconnected')
+    latestBuffer = null
     device = null
-    callback()
-  }
+  })
 }
 
-export { startHIDReading, stopHIDReading }
+const startHIDListening = (
+  callback: (joystickOutput: JoystickOutput, error: Error | null) => void
+): void => {
+  if (device) {
+    startHIDReading(callback)
+    return
+  }
+
+  setInterval(() => {
+    if (device) {
+      return
+    }
+
+    console.log('Checking for joystick connection...')
+    const devices = HID.devices()
+    const joystick = devices.find(
+      (device: any) => device.vendorId == 4617 && device.productId == 20308
+    )
+    if (joystick) {
+      console.log('Joystick connected')
+      startHIDReading(callback)
+      return
+    }
+  }, 1000)
+}
+
+export { startHIDListening }

@@ -1,8 +1,8 @@
-import { app, shell, BrowserWindow, ipcMain } from 'electron'
+import { app, shell, BrowserWindow } from 'electron'
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
-import { startHIDReading, stopHIDReading } from './hidHandler'
+import { startHIDListening } from './hidHandler'
 
 function createWindow(): void {
   // Create the browser window.
@@ -34,6 +34,15 @@ function createWindow(): void {
   } else {
     mainWindow.loadFile(join(__dirname, '../renderer/index.html'))
   }
+
+  startHIDListening((data, error) => {
+    if (error) {
+      console.error('Error in startHIDListening:', error)
+      mainWindow.webContents.send('hid-stop', error.message)
+      return
+    }
+    mainWindow.webContents.send('hid-data', data.getPWMData())
+  })
 }
 
 // This method will be called when Electron has finished
@@ -56,20 +65,6 @@ app.whenReady().then(() => {
     // On macOS it's common to re-create a window in the app when the
     // dock icon is clicked and there are no other windows open.
     if (BrowserWindow.getAllWindows().length === 0) createWindow()
-  })
-
-  ipcMain.on('start-hid', (event) => {
-    startHIDReading((data) => {
-      event.sender.send('hid-data', data.getPWMData())
-    })
-  })
-
-  ipcMain.on('stop-hid', (event) => {
-    console.log('stop-hid reading')
-    stopHIDReading(() => {
-      console.log('HID reading stopped')
-      event.sender.send('hid-stopped')
-    })
   })
 })
 

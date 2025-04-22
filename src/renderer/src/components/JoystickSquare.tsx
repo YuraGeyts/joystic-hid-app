@@ -35,8 +35,8 @@ const styles = {
     },
     circle: {
         position: 'absolute' as 'absolute',
-        width: '15px',
-        height: '15px',
+        width: '10px',
+        height: '10px',
         backgroundColor: 'red',
         borderRadius: '50%',
         transform: 'translate(-50%, -50%)'

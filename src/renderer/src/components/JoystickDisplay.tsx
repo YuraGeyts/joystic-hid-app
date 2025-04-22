@@ -14,7 +14,7 @@ const JoystickDisplay: React.FC = () => {
       setJoystickData(data)
     })
 
-    ipcRenderer.on('hid-stopped', () => {
+    ipcRenderer.on('hid-stop', () => {
       setJoystickData(null)
     })
 
@@ -31,36 +31,41 @@ const JoystickDisplay: React.FC = () => {
 
   const renderPWMTable = () => {
     if (!joystickData) return null;
-
+  
+    const excludedChannels = ['yaw', 'throttle', 'roll', 'pitch']
+    const filteredData = Object.entries(joystickData).filter(([channel]) => !excludedChannels.includes(channel))
+  
     return (
-      <table>
-        <thead>
-          <tr>
-            <th>Type</th>
-            <th>PWM</th>
-            <th>Progress</th>
-          </tr>
-        </thead>
-        <tbody>
-          {Object.entries(joystickData).map(([channel, pwmValue]) => (
-            <tr key={channel}>
-              <td>{channel}</td>
-              <td>{pwmValue}</td>
-              <td>
-                <div style={{ width: '100%', backgroundColor: '#ddd', height: '12px' }}>
-                  <div
-                    style={{
-                      width: `${calculateProgress(pwmValue)}%`,
-                      backgroundColor: 'green',
-                      height: '100%',
-                    }}
-                  />
-                </div>
-              </td>
+      <div style={styles.centerContainer}>
+        <table>
+          <thead>
+            <tr>
+              <th>Type</th>
+              <th>PWM</th>
+              <th>Progress</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {filteredData.map(([channel, pwmValue]) => (
+              <tr key={channel}>
+                <td>{channel}</td>
+                <td>{pwmValue}</td>
+                <td>
+                  <div style={{ width: '100%', backgroundColor: '#ddd', height: '12px' }}>
+                    <div
+                      style={{
+                        width: `${calculateProgress(pwmValue)}%`,
+                        backgroundColor: 'green',
+                        height: '100%',
+                      }}
+                    />
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     )
   }
 
@@ -79,6 +84,7 @@ const JoystickDisplay: React.FC = () => {
           </div>
         </div>
       )}
+      {joystickData && renderPWMTable()}
     </div>
   );
 };
@@ -92,7 +98,13 @@ const styles = {
   squareContainer: {
     width: '45%',
     textAlign: 'center' as 'center',
+    alignItems: 'center'
   },
-};
+  centerContainer: {
+    display : 'flex',
+    justifyContent: 'center',
+    alignItems: 'center'
+  }
+}
 
 export default JoystickDisplay

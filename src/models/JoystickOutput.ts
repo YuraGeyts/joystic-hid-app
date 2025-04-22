@@ -32,15 +32,27 @@ class JoystickOuput {
   }
 
   /** Constructor to initialize the joystick output data from a Buffer **/
-  constructor(data: Buffer) {
-    this.roll = data.readUint16LE(this.defaultByteOffsetMap.roll) // Roll
-    this.pitch = data.readUint16LE(this.defaultByteOffsetMap.pitch) // Pitch
-    this.throttle = data.readUint16LE(this.defaultByteOffsetMap.throttle) // Throttle
-    this.yaw = data.readUint16LE(this.defaultByteOffsetMap.yaw) // Yaw
-    this.disarm = data.readUint16LE(this.defaultByteOffsetMap.disarm) // SA
-    this.abort = data.readUint16LE(this.defaultByteOffsetMap.abort) // SB
-    this.detonation = data.readUint16LE(this.defaultByteOffsetMap.detonation) // SC
-    this.modeChange = data.readUint16LE(this.defaultByteOffsetMap.modeChange) // SD
+  constructor(data?: Buffer) {
+    if (data) {
+      this.roll = data.readUint16LE(this.defaultByteOffsetMap.roll) // Roll
+      this.pitch = data.readUint16LE(this.defaultByteOffsetMap.pitch) // Pitch
+      this.throttle = data.readUint16LE(this.defaultByteOffsetMap.throttle) // Throttle
+      this.yaw = data.readUint16LE(this.defaultByteOffsetMap.yaw) // Yaw
+      this.disarm = data.readUint16LE(this.defaultByteOffsetMap.disarm) // SA
+      this.abort = data.readUint16LE(this.defaultByteOffsetMap.abort) // SB
+      this.detonation = data.readUint16LE(this.defaultByteOffsetMap.detonation) // SC
+      this.modeChange = data.readUint16LE(this.defaultByteOffsetMap.modeChange) // SD
+    } else {
+      // Якщо дані не передано, ініціалізуємо всі значення як 0
+      this.roll = 0
+      this.pitch = 0
+      this.throttle = 0
+      this.yaw = 0
+      this.disarm = 0
+      this.abort = 0
+      this.detonation = 0
+      this.modeChange = 0
+    }
   }
 
   /** Method to update the joystick output data from a Buffer **/
