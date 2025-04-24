@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react'
 import { JoystickOutputInterface } from '../../../models/JoystickOutput'
 import JoystickSquare from './JoystickSquare'
-import PWMTable from './PWMTable';
+import PWMTable from './PWMTable'
+import styles from '../../../shared/styles'
 
 const JoystickDisplay: React.FC = () => {
   // State to store joystick data
@@ -24,11 +25,6 @@ const JoystickDisplay: React.FC = () => {
       ipcRenderer.removeAllListeners('hid-data')
     }
   }, [])
-
-  // Progress calculation function
-  const calculateProgress = (pwmValue: number) => {
-    return ((pwmValue - 1000) / (2000 - 1000)) * 100
-  }
 
   return (
     <div style={{ textAlign: 'center' }}>
@@ -53,25 +49,7 @@ const JoystickDisplay: React.FC = () => {
         </div>
       )}
     </div>
-  );
-};
-
-const styles = {
-  row: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    width: '100%',
-  },
-  squareContainer: {
-    width: '45%',
-    textAlign: 'center' as 'center',
-    alignItems: 'center'
-  },
-  centerContainer: {
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center'
-  }
+  )
 }
 
 export default JoystickDisplay

@@ -1,5 +1,6 @@
 import React from 'react'
 import { JoystickOutputInterface } from '../../../models/JoystickOutput'
+import styles from '../../../shared/styles'
 
 const PWMTable: React.FC<JoystickOutputInterface> = (props) => {
     // Progress calculation function
@@ -12,7 +13,7 @@ const PWMTable: React.FC<JoystickOutputInterface> = (props) => {
         const filteredData = Object.entries(props).filter(([channel]) => !excludedChannels.includes(channel))
     
         return (
-        <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+        <div style={styles.centerContainer}>
             <table>
             <thead>
                 <tr>
